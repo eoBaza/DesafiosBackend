@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from app.customer.models import Customer
-from .models import Loans
 
 
 class LoansSerializer(serializers.Serializer):
