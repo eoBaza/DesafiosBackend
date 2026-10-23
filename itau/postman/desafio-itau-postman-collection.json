@@ -1,0 +1,85 @@
+{
+  "info": {
+    "name": "Desafio Itaú - API de Transações",
+    "description": "Coleção do Postman para os dois endpoints implementados em Django REST Framework: registrar uma transação e consultar estatísticas dos últimos 60 segundos. Configure baseUrl conforme sua aplicação. A data da transação é gerada automaticamente pelo Postman.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "POST - Criar transação",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"valor\": 123.45,\n  \"dataHora\": \"{{$isoTimestamp}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/transacao/",
+        "description": "Registra uma transação com valor não negativo e horário não futuro. Esperado: 201 Created. A variável dinâmica {{$isoTimestamp}} usa o momento do envio."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('POST: retorna 201 Created', function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET - Estatísticas (últimos 60 segundos)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/estatistica/",
+        "description": "Retorna count, sum, avg, min e max das transações registradas nos últimos 60 segundos. Esperado: 200 OK."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('GET: retorna 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('GET: contém as cinco estatísticas', function () {",
+              "    const body = pm.response.json();",
+              "    ['count', 'sum', 'avg', 'min', 'max'].forEach(function (key) {",
+              "        pm.expect(body).to.have.property(key);",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ]
+}
